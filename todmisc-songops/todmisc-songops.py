@@ -3,14 +3,17 @@
 import sys, os
 import argparse
 
-sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/bread'))
 sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/pylsdj'))
-sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/../../bread'))
+sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/bread'))
 sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/../../pylsdj'))
+sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/../../bread'))
 
-import pylsdj.savfile as savfile
-from pylsdj.project import load_lsdsng
-
+try:
+    import pylsdj.savfile as savfile
+    from pylsdj.project import load_lsdsng
+except ImportError:
+    print("Cannot find pylsdj. Please type: git submodule update --init")
+    sys.exit(0)
 
 def parse_cmd_line_and_execute(args, print_args=False):
     if print_args:
