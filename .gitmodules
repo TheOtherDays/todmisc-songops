@@ -1,0 +1,6 @@
+[submodule "todmisc-songops/pylsdj"]
+	path = todmisc-songops/pylsdj
+	url = https://github.com/alexras/pylsdj.git
+[submodule "todmisc-songops/bread"]
+	path = todmisc-songops/bread
+	url = https://github.com/alexras/bread.git
