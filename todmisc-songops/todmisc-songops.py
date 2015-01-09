@@ -2,6 +2,7 @@
 
 import sys, os
 import argparse
+import bitstring
 
 sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/pylsdj'))
 sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/bread'))
@@ -74,7 +75,7 @@ def print_info(ifile):
         try:
             sng = load_lsdsng(ifile)
             print(("%2X %8s.%02X %02X" % (0, sng.name, sng.version, sng.size_blks)))
-        except AssertionError:
+        except:
             print_sav_info(ifile)
 
 
@@ -177,13 +178,13 @@ def join_into_sav(ifnames, ofname, **args):
         sav = None
         try:
             sng = load_lsdsng(ifname)
-        except AssertionError:
+        except:
             sng = None
 
         if sng is None:
             try:
                 sav = savfile.SAVFile(ifname)
-            except AssertionError:
+            except:
                 sav = None
 
         if sng is None and sav is None:
