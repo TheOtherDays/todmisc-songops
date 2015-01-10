@@ -4,6 +4,3 @@
 [submodule "todmisc-songops/bread"]
 	path = todmisc-songops/bread
 	url = https://github.com/alexras/bread.git
-[submodule "bread"]
-	path = bread
-	url = https://github.com/TheOtherDays/bread
