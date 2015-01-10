@@ -43,7 +43,7 @@ class ArgParser(object):
         # now that we're inside a subcommand, ignore the first
         # TWO argvs, ie the command (git) and the subcommand (commit)
         args = parser.parse_args(self.argv[2:])
-        print_info(args.file)
+        print_info(args.input_file)
 
 
     def split_sav(self):
@@ -249,8 +249,8 @@ def make_tests():
     ArgParser((sys.argv[0]+" join_into_sav -i ./test_files/s1.lsdsng ./test_files/s2.lsdsng -o "+os.path.join(tempfile.gettempdir()+"/merged.sav")).split(" "), print_args=True)
     ArgParser((sys.argv[0]+" join_into_sav -i ./test_files/s1.lsdsng "+os.path.join(tempfile.gettempdir()+"/merged.sav -o "+os.path.join(tempfile.gettempdir()+"/merged2.sav"))).split(" "), print_args=True)
     ArgParser((sys.argv[0]+" split_sav -i "+os.path.join(tempfile.gettempdir(), "merged2.sav")+" -d "+tmpdir).split(" "), print_args=True)
-    ArgParser((sys.argv[0]+" print_info "+os.path.join(tempfile.gettempdir(), "merged2.sav")).split(" "), print_args=True)
-    ArgParser((sys.argv[0]+" print_info ./test_files/s1.lsdsng").split(" "), print_args=True)
+    ArgParser((sys.argv[0]+" print_info -i "+os.path.join(tempfile.gettempdir(), "merged2.sav")).split(" "), print_args=True)
+    ArgParser((sys.argv[0]+" print_info -i ./test_files/s1.lsdsng").split(" "), print_args=True)
 
 if __name__ == "__main__":
     ArgParser()
