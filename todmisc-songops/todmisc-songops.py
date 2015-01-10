@@ -1,15 +1,18 @@
 #!/usr/bin/python2
 
-import sys, os
+import sys
+import os
 import argparse
 import bitstring
 # FIXME; fix exit status
 
 sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/pylsdj'))
 sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/bread'))
+sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/pylsdj/pylsdj'))
 sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/../../pylsdj'))
 sys.path.append(os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])) + '/../../bread'))
 
+import pylsdj.savfile as savfile
 try:
     import pylsdj.savfile as savfile
     from pylsdj.project import load_lsdsng
@@ -17,37 +20,38 @@ except ImportError:
     print("Cannot find pylsdj. Please type: git submodule update --init")
     sys.exit(0)
 
+
 class ArgParser(object):
+
     def __init__(self, argv=sys.argv, print_args=True):
-        self.argv=argv
-	# Thanks to https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
+        self.argv = argv
+        # Thanks to https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
         if print_args:
             print("Executing: " + ' '.join(self.argv))
-	parser = argparse.ArgumentParser()
+        parser = argparse.ArgumentParser()
 
         parser.add_argument('command', help='Subcommand to run. Command can be: print_info, split_sav, join_into_sav, test')
         # parse_args defaults to [1:] for args, but you need to
         # exclude the rest of the args too, or validation will fail
         args = parser.parse_args(self.argv[1:2])
         if not hasattr(self, args.command):
-            print('Unrecognized command: ' + args.command) 
+            print('Unrecognized command: ' + args.command)
             parser.print_help()
             sys.exit(1)
         # use dispatch pattern to invoke method with same name
-	self.command = args.command
+        self.command = args.command
         return getattr(self, args.command)()
 
     def print_info(self):
-        parser = argparse.ArgumentParser(prog=self.argv[0]+' '+self.argv[1], description='lists songs in a .sav file or print info about a song')
+        parser = argparse.ArgumentParser(prog=self.argv[0] + ' ' + self.argv[1], description='lists songs in a .sav file or print info about a song')
         parser.add_argument('-i', '--input_file', action='store', help='.sav file or .lsdsngfile', required=True)
         # now that we're inside a subcommand, ignore the first
         # TWO argvs, ie the command (git) and the subcommand (commit)
         args = parser.parse_args(self.argv[2:])
         print_info(args.input_file)
 
-
     def split_sav(self):
-        parser = argparse.ArgumentParser(prog=self.argv[0]+' '+self.argv[1], description='extract songs from a .sav')
+        parser = argparse.ArgumentParser(prog=self.argv[0] + ' ' + self.argv[1], description='extract songs from a .sav')
         parser.add_argument('-i', '--input_file', action='store', help='.sav file', required=True)
         parser.add_argument('-n', '--no_version', help='do not use song version in the filename', action='store_true', default=False)
         parser.add_argument('-d', '--output_dir', help='output directory. default: current directory', default='.')
@@ -55,18 +59,16 @@ class ArgParser(object):
         args = parser.parse_args(self.argv[2:])
         split_sav(args.input_file, with_version=not(args.no_version), output_dir=args.output_dir, nb_to_dump=args.select)
 
-
     def join_into_sav(self):
-        parser = argparse.ArgumentParser(prog=self.argv[0]+' '+self.argv[1], description='joins several songs or saves into a new save file')
+        parser = argparse.ArgumentParser(prog=self.argv[0] + ' ' + self.argv[1], description='joins several songs or saves into a new save file')
         parser.add_argument('-i', '--input_file', action='store', help=".lsdsng or .sav files", nargs='+', required=True)
         parser.add_argument('-o', '--output_file', required=True, action='store', help="output .sav file")
         parser.set_defaults(cmd='join_into_sav')
         args = parser.parse_args(self.argv[2:])
         join_into_sav(args.input_file, args.output_file, **vars(args))
 
-
     def test(self):
-        parser = argparse.ArgumentParser(prog=self.argv[0]+' '+self.argv[1], description='make tests')
+        parser = argparse.ArgumentParser(prog=self.argv[0] + ' ' + self.argv[1], description='make tests')
         args = parser.parse_args(self.argv[2:])
         make_tests()
 
@@ -139,7 +141,8 @@ def split_sav(fname, with_version=True, output_dir='.', nb_to_dump=""):
 
 
 def empty_save_file_bytes():
-    import base64, zlib
+    import base64
+    import zlib
     # to compress: print(base64.b64encode(zlib.compress(open('/tmp/empty.sav','rb').read(), 9)))
     return zlib.decompress(base64.b64decode(b'eNrt3D1KwwAYBuBooa4eIeAJtD970ia5gF7AwUE3B2c3ndy9gXoFr6DgXTxAfaOC4KbFweZ54OubF76hkEB/CCkKAAAAYNOs1vTX72881ofcV8Bg+YQGgJ9blJNysTcpl8llskm2/eS4S3bJKlkl6363nGZ/mv1Mskm2/eS4S3bJKlkl6363nGV/lv1Mskm2/eS4S3bJKlkl6363nGd/nv1Mskm2mfNj5wq/9wDA/z0AwCDcFUW+BIyK4iXlVdf1IXUAAAbll/cB7K4+ZpD98v11Z/uzbrmKAAAAAAAAAGDYbp6fHh/ub6+vLk6ODhcH+7qu67qu67qu67qub173BCIAAADYPN+etzByB8Q6Ts/++/XgHAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAlzcmXv4t'))
 
@@ -178,7 +181,7 @@ def add_sng_to_sav(sav, sng):
 
 
 def sav_print_callback(msg, curr_step, total_steps, b):
-    print("# "+msg+" "+str(curr_step)+"/"+str(total_steps)+" "+str(b))
+    print("# " + msg + " " + str(curr_step) + "/" + str(total_steps) + " " + str(b))
 
 
 def get_file_type(ifname):
@@ -210,7 +213,7 @@ def join_into_sav(ifnames, ofname, **args):
     fout.write(empty_save_file_bytes())
     foutname = fout.name
     fout.close()
-    target_sav = savfile.SAVFile(foutname) # FIXME: crappy. We shouldn't need a temp file
+    target_sav = savfile.SAVFile(foutname)  # FIXME: crappy. We shouldn't need a temp file
 
     try:
         os.remove(foutname)
@@ -245,12 +248,12 @@ def make_tests():
     tmpdir = os.path.join(tempfile.gettempdir(), "split")
     if not os.path.isdir(tmpdir):
         os.mkdir(tmpdir)
-    
-    ArgParser((sys.argv[0]+" join_into_sav -i ./test_files/s1.lsdsng ./test_files/s2.lsdsng -o "+os.path.join(tempfile.gettempdir()+"/merged.sav")).split(" "), print_args=True)
-    ArgParser((sys.argv[0]+" join_into_sav -i ./test_files/s1.lsdsng "+os.path.join(tempfile.gettempdir()+"/merged.sav -o "+os.path.join(tempfile.gettempdir()+"/merged2.sav"))).split(" "), print_args=True)
-    ArgParser((sys.argv[0]+" split_sav -i "+os.path.join(tempfile.gettempdir(), "merged2.sav")+" -d "+tmpdir).split(" "), print_args=True)
-    ArgParser((sys.argv[0]+" print_info -i "+os.path.join(tempfile.gettempdir(), "merged2.sav")).split(" "), print_args=True)
-    ArgParser((sys.argv[0]+" print_info -i ./test_files/s1.lsdsng").split(" "), print_args=True)
+
+    ArgParser((sys.argv[0] + " join_into_sav -i ./test_files/s1.lsdsng ./test_files/s2.lsdsng -o " + os.path.join(tempfile.gettempdir() + "/merged.sav")).split(" "), print_args=True)
+    ArgParser((sys.argv[0] + " join_into_sav -i ./test_files/s1.lsdsng " + os.path.join(tempfile.gettempdir() + "/merged.sav -o " + os.path.join(tempfile.gettempdir() + "/merged2.sav"))).split(" "), print_args=True)
+    ArgParser((sys.argv[0] + " split_sav -i " + os.path.join(tempfile.gettempdir(), "merged2.sav") + " -d " + tmpdir).split(" "), print_args=True)
+    ArgParser((sys.argv[0] + " print_info -i " + os.path.join(tempfile.gettempdir(), "merged2.sav")).split(" "), print_args=True)
+    ArgParser((sys.argv[0] + " print_info -i ./test_files/s1.lsdsng").split(" "), print_args=True)
 
 if __name__ == "__main__":
     ArgParser()
