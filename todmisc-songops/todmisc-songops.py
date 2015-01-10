@@ -39,7 +39,7 @@ class ArgParser(object):
 
     def print_info(self):
         parser = argparse.ArgumentParser(prog=self.argv[0]+' '+self.argv[1], description='lists songs in a .sav file or print info about a song')
-        parser.add_argument('file', action='store', help='.sav or .lsdsng file')
+        parser.add_argument('-i', '--input_file', action='store', help='.sav file or .lsdsngfile', required=True)
         # now that we're inside a subcommand, ignore the first
         # TWO argvs, ie the command (git) and the subcommand (commit)
         args = parser.parse_args(self.argv[2:])
@@ -130,7 +130,7 @@ def split_sav(fname, with_version=True, output_dir='.', nb_to_dump=""):
             if(with_version):
                 fname_out += '.' + '%02X' % project.version
 
-            fname_out += '.lsdjsng'
+            fname_out += '.lsdsng'
 
             fname_out = os.path.join(output_dir, fname_out)
             print(("Saving " + fname_out))
