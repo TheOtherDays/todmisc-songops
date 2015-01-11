@@ -118,7 +118,7 @@ def split_sav(fname, with_version=True, output_dir='.', nb_to_dump=""):
                 if nb_to_dump.find(to_find) == -1:
                     song_nb = song_nb + 1
                     continue
-            fname_out = project.name.decode("ASCII").split(b'\0')[0]
+            fname_out = project.name.split(b'\0')[0].decode("ASCII")
 
             if(fname_out in names):
                 nb = 1
