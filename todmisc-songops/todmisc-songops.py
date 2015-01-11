@@ -118,7 +118,7 @@ def split_sav(fname, with_version=True, output_dir='.', nb_to_dump=""):
                 if nb_to_dump.find(to_find) == -1:
                     song_nb = song_nb + 1
                     continue
-            fname_out = project.name.decode("ASCII").split("\0")[0]
+            fname_out = project.name.decode("ASCII").split(b'\0')[0]
 
             if(fname_out in names):
                 nb = 1
@@ -147,17 +147,17 @@ def empty_save_file_bytes():
 
 
 def clean_filenames(sav):
-    for i in xrange(0, 0x20):
+    for i in range(0, 0x20):
         if i not in sav.projects or sav.projects[i] is None:
-            sav.header_block.filenames[i] = 8 * '\x00'
+            sav.header_block.filenames[i] = 8 * b'\x00'
         else:
-            sav.header_block.filenames[i] = sav.header_block.filenames[i].split('\x00')[0].ljust(8, '\x00')
+            sav.header_block.filenames[i] = sav.header_block.filenames[i].split(b'\x00')[0].ljust(8, b'\x00')
     return sav
 
 
 def find_next_free_slot(sav):
     free_slot = -1
-    for i in xrange(0, 0x20):
+    for i in range(0, 0x20):
         if sav.projects[i] is None:
             free_slot = i
             break
@@ -225,13 +225,13 @@ def join_into_sav(ifnames, ofname, **args):
         if sng is None and sav is None:
             raise Exception("Cannot determine the file type of " + str(ifname))
         elif sng is not None:
-            print("Adding " + sng.name + " from " + ifname)
+            print("Adding " + str(sng.name) + " from " + ifname)
             target_sav = add_sng_to_sav(target_sav, sng)
             nb_songs += 1
         elif sav is not None:
             for i, project in list(sav.projects.items()):
                 if project is not None:
-                    print("Adding " + project.name + " from " + ifname)
+                    print("Adding " + str(project.name) + " from " + ifname)
                     target_sav = add_sng_to_sav(target_sav, project)
                     nb_songs += 1
 
