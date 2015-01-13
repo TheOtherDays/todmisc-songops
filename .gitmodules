@@ -3,4 +3,5 @@
 	url = https://github.com/TheOtherDays/pylsdj
 [submodule "todmisc-songops/bread"]
 	path = todmisc-songops/bread
-	url = https://github.com/TheOtherDays/bread
+	url = https://github.com/TheOtherDays/bread.git
+	branch = master
