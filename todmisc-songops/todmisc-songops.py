@@ -104,7 +104,7 @@ def split_sav(fname, with_version=True, output_dir='.', nb_to_dump=""):
     if(nb_to_dump != ''):
         nb_to_dump = ',' + nb_to_dump.upper() + ','
 
-    sav = savfile.SAVFile(fname)
+    sav = savfile.SAVFile(fname, callback=sav_print_callback)
 
     if output_dir != '.':
         if not os.path.isdir(output_dir):
