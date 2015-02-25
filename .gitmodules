@@ -1,7 +1,7 @@
 [submodule "todmisc-songops/pylsdj"]
 	path = todmisc-songops/pylsdj
-	url = https://github.com/TheOtherDays/pylsdj
+	url = https://github.com/alexras/pylsdj
 [submodule "todmisc-songops/bread"]
 	path = todmisc-songops/bread
-	url = https://github.com/TheOtherDays/bread.git
+	url = https://github.com/alexras/bread.git
 	branch = master

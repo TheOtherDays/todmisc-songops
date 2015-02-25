@@ -78,7 +78,7 @@ def print_sng_info(sng):
 
 def print_sav_info(sav):
     nb = 0
-    for i, project in list(sav.projects.items()):
+    for i,project in sav.project_list:
         if project is not None:
             name = project.name.decode("ASCII").split("\0")[0]
             ver = '%02X' % project.version
@@ -111,7 +111,7 @@ def split_sav(fname, with_version=True, output_dir='.', nb_to_dump=""):
             os.makedirs(output_dir)
 
     song_nb = 0
-    for i, project in list(sav.projects.items()):
+    for i, project in sav.project_list:
         if project is not None:
             if nb_to_dump != "":
                 to_find = ',' + "%X" % song_nb + ','
@@ -146,15 +146,6 @@ def empty_save_file_bytes():
     return zlib.decompress(base64.b64decode(b'eNrt3D1KwwAYBuBooa4eIeAJtD970ia5gF7AwUE3B2c3ndy9gXoFr6DgXTxAfaOC4KbFweZ54OubF76hkEB/CCkKAAAAYNOs1vTX72881ofcV8Bg+YQGgJ9blJNysTcpl8llskm2/eS4S3bJKlkl6363nGZ/mv1Mskm2/eS4S3bJKlkl6363nGV/lv1Mskm2/eS4S3bJKlkl6363nGd/nv1Mskm2mfNj5wq/9wDA/z0AwCDcFUW+BIyK4iXlVdf1IXUAAAbll/cB7K4+ZpD98v11Z/uzbrmKAAAAAAAAAGDYbp6fHh/ub6+vLk6ODhcH+7qu67qu67qu67qub173BCIAAADYPN+etzByB8Q6Ts/++/XgHAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAlzcmXv4t'))
 
 
-def clean_filenames(sav):
-    for i in range(0, 0x20):
-        if i not in sav.projects or sav.projects[i] is None:
-            sav.header_block.filenames[i] = 8 * b'\x00'
-        else:
-            sav.header_block.filenames[i] = sav.header_block.filenames[i].split(b'\x00')[0].ljust(8, b'\x00')
-    return sav
-
-
 def find_next_free_slot(sav):
     free_slot = -1
     for i in range(0, 0x20):
@@ -176,7 +167,7 @@ def add_sng_to_sav(sav, sng):
     sav.header_block.filenames[free_slot] = sng.name
     sav.header_block.file_versions[free_slot] = sng.version
 
-    return clean_filenames(sav)
+    return sav
 
 
 def sav_print_callback(msg, curr_step, total_steps, b):
@@ -214,11 +205,6 @@ def join_into_sav(ifnames, ofname, **args):
     fout.close()
     target_sav = savfile.SAVFile(foutname)  # FIXME: crappy. We shouldn't need a temp file
 
-    try:
-        os.remove(foutname)
-    except OSError:
-        pass
-
     nb_songs = 0
     for ifname in ifnames:
         (sng, sav) = get_file_type(ifname)
@@ -229,7 +215,7 @@ def join_into_sav(ifnames, ofname, **args):
             target_sav = add_sng_to_sav(target_sav, sng)
             nb_songs += 1
         elif sav is not None:
-            for i, project in list(sav.projects.items()):
+            for i,project in sav.project_list:
                 if project is not None:
                     print("Adding " + str(project.name) + " from " + ifname)
                     target_sav = add_sng_to_sav(target_sav, project)
@@ -240,6 +226,11 @@ def join_into_sav(ifnames, ofname, **args):
 
     print("Saving to " + ofname)
     target_sav.save(ofname)
+
+    try:
+        os.remove(foutname)
+    except OSError:
+        pass
 
 
 def make_tests():
