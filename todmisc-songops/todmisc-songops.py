@@ -60,7 +60,7 @@ class ArgParser(object):
 
     def join_into_sav(self):
         parser = argparse.ArgumentParser(prog=self.argv[0] + ' ' + self.argv[1], description='joins several songs or saves into a new save file')
-        parser.add_argument('-i', '--input_file', action='store', help=".lsdsng or .sav files", nargs='+', required=True)
+        parser.add_argument('-i', '--input_file', help=".lsdsng or .sav files", nargs='+', required=True, action='append')
         parser.add_argument('-o', '--output_file', required=True, action='store', help="output .sav file")
         parser.set_defaults(cmd='join_into_sav')
         args = parser.parse_args(self.argv[2:])
@@ -158,7 +158,7 @@ def find_next_free_slot(sav):
 def add_sng_to_sav(sav, sng):
     # see http://littlesounddj.wikia.com/wiki/File_Management_Structure
     free_slot = find_next_free_slot(sav)
-
+    # print("free slot: " + str(free_slot))
     if free_slot == -1:
         raise InterruptedError(".sav file is full. no more free slot")
 
@@ -197,6 +197,9 @@ def get_file_type(ifname):
 
 
 def join_into_sav(ifnames, ofname, **args):
+    # we got lists of lists for -i ! : [[file1],[file2]]
+    ifnames = map(lambda x: x[0], ifnames)
+
     # FIXME: clean filenames before saving
     import tempfile
     fout = tempfile.NamedTemporaryFile(mode='wb', prefix='todmisc_', suffix='.tmp', delete=False)
